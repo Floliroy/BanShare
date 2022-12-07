@@ -49,6 +49,8 @@ module.exports = class ApiTwitch {
             for(const [_, subs] of allSubs){
                 subsChannels.concat(subs.filter((sub) => subsChannels.indexOf(sub) < 0))
             }
+            console.log(allSubs)
+
 
             for(const share of allShare){
                 console.log(`INFO: Listener on ${share.name} channel`)
@@ -62,6 +64,7 @@ module.exports = class ApiTwitch {
                     console.log(`LOG: New ban into ${user}'s list: ${msg.user.value}`)
     
                     if(allSubs.has(msg.channelId)){
+                        console.log(subs)
                         const subs = allSubs.get(msg.channelId)
                         for(const sub of subs){
                             const auth = await getRefreshAuthProvider(sub, con)
