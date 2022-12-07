@@ -1,6 +1,15 @@
 const Database = require("./Database")
 const Tokens = require("./Tokens")
 
+function getSubs(userId, users){
+    for(const user of users){
+        if(userId == user.id){
+            return user.subs
+        } 
+    }
+    return 0
+}
+
 module.exports = class Users{
 
     static async saveUser(id, name, image, token, con){
@@ -125,7 +134,7 @@ module.exports = class Users{
                 })
             }
             users.sort(function(a, b){
-                return b.subs - a.subs
+                return getSubs(b.id, users) - getSubs(a.id, users)
             })
             return users
         }catch (error){
