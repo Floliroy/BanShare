@@ -41,7 +41,7 @@ function getSubs(id){
                                     <input type="hidden" id="subId" name="subId" value="<%=usr.id%>">
                                     <input type="hidden" id="subName" name="subName" value="<%=usr.name%>">
                                     <button class="btn btn-light me-3" <%=usr.id == req.cookies.userId ? "disabled" : ""%>>
-                                        SUB
+                                        <strong>SUB</strong>
                                     </button>
                                 </form>
                             </td>
