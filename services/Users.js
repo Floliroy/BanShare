@@ -136,7 +136,6 @@ module.exports = class Users{
             users.sort(function(a, b){
                 return getSubs(b.id, users) - getSubs(a.id, users)
             })
-            console.log(users)
             return users
         }catch (error){
             return new Array()

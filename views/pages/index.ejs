@@ -3,7 +3,7 @@ const loginUrl = `https://id.twitch.tv/oauth2/authorize?client_id=ngi4q1u2mkhcgu
 
 function getSubs(userId){
     for(const usr of allUsers){
-        if(userId == usr.id){
+        if(userId == usr.id && !usr.name && !usr.image){
             return usr.subs
         } 
     }
