@@ -3,7 +3,7 @@ const Tokens = require("./Tokens")
 
 function getSubs(userId, users){
     for(const user of users){
-        if(userId == user.id){
+        if(userId == user.id && !user.name && !user.image){
             return user.subs
         } 
     }
