@@ -51,6 +51,8 @@ module.exports = class ApiTwitch {
             }
 
             for(const share of allShare){
+                console.log(`INFO: Listener on ${share.name} channel`)
+
                 const authProvider = await getRefreshAuthProvider(share.id, con)
                 const chatClient = new ChatClient({ authProvider, channels: [share.name] })
                 await chatClient.connect()
@@ -73,7 +75,7 @@ module.exports = class ApiTwitch {
                 })
             }
             
-            console.log("Logged on Twitch Bot")
+            console.log("INFO: Logged on Twitch Bot")
         }catch(error){
             throw new Error(error.message)
         }finally{
