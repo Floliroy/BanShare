@@ -14,6 +14,7 @@ module.exports = class Tokens{
                 "moderation:read",
                 "moderator:manage:banned_users"
             ]
+            return token
         }catch (error){
             throw new Error(error.message)
         }finally{
