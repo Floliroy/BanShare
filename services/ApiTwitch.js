@@ -54,7 +54,7 @@ module.exports = class ApiTwitch {
                 console.log(`INFO: Listener on ${share.name} channel`)
 
                 const authProvider = await getRefreshAuthProvider(share.id, con)
-                const chatClient = new ChatClient({ authProvider, channels: [share.name] })
+                const chatClient = new ChatClient({ authProvider, channels: [share.name.toLowerCase()] })
                 await chatClient.connect()
     
                 chatClient.onBan(async function(user, _, msg){
@@ -130,7 +130,7 @@ module.exports = class ApiTwitch {
             }
             
             const auth = await getRefreshAuthProvider(subId, con)
-            const chatClient = new ChatClient({ authProvider: auth, channels: [subName] })
+            const chatClient = new ChatClient({ authProvider: auth, channels: [subName.toLowerCase()] })
             await chatClient.connect()
 
             chatClient.onBan(async function(user, _, msg){
