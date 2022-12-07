@@ -27,8 +27,8 @@ async function getAccessToken(req, redirect){
     return result.data
 }
 
-function getRefreshAuthProvider(userId, con){
-    const tokenData = Tokens.get(userId, con)
+async function getRefreshAuthProvider(userId, con){
+    const tokenData = await Tokens.get(userId, con)
     console.log(tokenData)
     return new RefreshingAuthProvider({
         clientId, clientSecret,
@@ -52,7 +52,7 @@ module.exports = class ApiTwitch {
             }
 
             for(const share of allShare){
-                const authProvider = getRefreshAuthProvider(share.id, con)
+                const authProvider = await getRefreshAuthProvider(share.id, con)
                 const chatClient = new ChatClient({ authProvider, channels: [share.name] })
                 await chatClient.connect()
     
@@ -62,7 +62,7 @@ module.exports = class ApiTwitch {
                     if(allSubs.has(msg.channelId)){
                         const subs = allSubs.get(msg.channelId)
                         for(const sub of subs){
-                            const auth = getRefreshAuthProvider(sub, con)
+                            const auth = await getRefreshAuthProvider(sub, con)
                             const api = new ApiClient({ authProvider: auth })
     
                             if(!await api.moderation.checkUserBan(sub, msg.targetUserId)){
@@ -98,7 +98,7 @@ module.exports = class ApiTwitch {
     static async shareBans(userId){
         const con = await Database.getConnection()
         try{
-            const authProvider = getRefreshAuthProvider(userId, con)
+            const authProvider = await getRefreshAuthProvider(userId, con)
             const api = new ApiClient({ authProvider })
     
             const banneds = await api.moderation.getBannedUsers(userId)
@@ -115,7 +115,7 @@ module.exports = class ApiTwitch {
     static async subToUser(subId, subName, userId){
         const con = await Database.getConnection()
         try{
-            const authProvider = getRefreshAuthProvider(userId, con)
+            const authProvider = await getRefreshAuthProvider(userId, con)
             const api = new ApiClient({ authProvider })
 
             SubChannel.subToUser(subId, userId, con)
@@ -127,7 +127,7 @@ module.exports = class ApiTwitch {
                 }
             }
             
-            const auth = getRefreshAuthProvider(subId, con)
+            const auth = await getRefreshAuthProvider(subId, con)
             const chatClient = new ChatClient({ authProvider: auth, channels: [subName] })
             await chatClient.connect()
 
