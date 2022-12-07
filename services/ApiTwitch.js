@@ -57,6 +57,7 @@ module.exports = class ApiTwitch {
     
                 chatClient.onBan(async function(user, _, msg){
                     BanChannel.addBannedUser(msg.channelId, msg.targetUserId, con)
+                    console.log(`LOG: New ban into ${user}' list: ${msg.targetUserId}`)
     
                     if(allSubs.has(msg.channelId)){
                         const subs = allSubs.get(msg.channelId)
@@ -132,11 +133,14 @@ module.exports = class ApiTwitch {
 
             chatClient.onBan(async function(user, _, msg){
                 BanChannel.addBannedUser(subId, msg.targetUserId, con)
+                console.log(`LOG: New ban into ${user}' list: ${msg.targetUserId}`)
                 
                 if(!await api.moderation.checkUserBan(userId, msg.targetUserId)){
                     api.moderation.banUser(userId, userId, {duration: null, reason: `Ban copied from ${user}'s channel`, userId: msg.targetUserId})    
                 }           
             })
+
+            console.log(`LOG: User ${userId} subbed to ${subName}'s ban list`)
         }catch(error){
             throw new Error(error.message)
         }finally{
