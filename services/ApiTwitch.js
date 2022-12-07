@@ -28,7 +28,7 @@ async function getAccessToken(req, redirect){
 }
 
 function getRefreshAuthProvider(userId, con){
-    const tokenData = Tokens.get(sub, con)
+    const tokenData = Tokens.get(userId, con)
     return new RefreshingAuthProvider({
         clientId, clientSecret,
         onRefresh: async function(newTokenData){
@@ -95,13 +95,13 @@ module.exports = class ApiTwitch {
     }
 
     static async shareBans(userId){
-        const authProvider = getRefreshAuthProvider(userId, con)
-        const api = new ApiClient({ authProvider })
-
-        const banneds = await api.moderation.getBannedUsers(userId)
-
         const con = await Database.getConnection()
         try{
+            const authProvider = getRefreshAuthProvider(userId, con)
+            const api = new ApiClient({ authProvider })
+    
+            const banneds = await api.moderation.getBannedUsers(userId)
+
             Users.updateShare(userId, true, con)
             BanChannel.addBannedsUsers(userId, banneds.data, con)
         }catch(error){
@@ -112,11 +112,11 @@ module.exports = class ApiTwitch {
     }
 
     static async subToUser(subId, subName, userId){
-        const authProvider = getRefreshAuthProvider(userId, con)
-        const api = new ApiClient({ authProvider })
-
         const con = await Database.getConnection()
         try{
+            const authProvider = getRefreshAuthProvider(userId, con)
+            const api = new ApiClient({ authProvider })
+
             SubChannel.subToUser(subId, userId, con)
             const banneds = await BanChannel.getAllFromUser(subId, con)
 
