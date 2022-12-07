@@ -10,9 +10,9 @@ module.exports = class SubChannel{
             const subs = new Map()
             for(const line of result[0]){
                 if(subs.has(line.g_bn_id)){
-                    subs.set(line.g_bn_id, subs.get(line.g_bn_id).push(line.g_sb_sub))
+                    subs.set(line.g_sb_id, subs.get(line.g_sb_id).push(line.g_sb_sub))
                 }else{
-                    subs.set(line.g_bn_id, new Array(line.g_sb_sub))
+                    subs.set(line.g_sb_id, new Array(line.g_sb_sub))
                 }
             }
             return subs
