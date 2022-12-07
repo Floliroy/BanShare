@@ -29,7 +29,6 @@ async function getAccessToken(req, redirect){
 
 async function getRefreshAuthProvider(userId, con){
     const tokenData = await Tokens.get(userId, con)
-    console.log(tokenData)
     return new RefreshingAuthProvider({
         clientId, clientSecret,
         onRefresh: async function(newTokenData){
