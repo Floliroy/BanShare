@@ -32,7 +32,7 @@ async function getRefreshAuthProvider(userId, con){
     return new RefreshingAuthProvider({
         clientId, clientSecret,
         onRefresh: async function(newTokenData){
-            Tokens.save(userId, newTokenData, con)
+            await Tokens.save(userId, newTokenData, con)
         }
     }, tokenData)
 }
