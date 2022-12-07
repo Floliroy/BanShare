@@ -12,11 +12,11 @@ const pool = mysql.createPool({
 })
 
 pool.on("acquire", function (connection) {
-    if(process.env.PORT != 4500) return
+    if(process.env.PORT == 4500) return
     console.log("DEBUG: Connection acquired =>", connection.threadId);
 })
 pool.on("release", function (connection) {
-    if(process.env.PORT != 4500) return
+    if(process.env.PORT == 4500) return
     console.log("DEBUG: Connection released =>", connection.threadId);
 })
 
