@@ -49,8 +49,15 @@ module.exports = function(app){
             return res.status(401).send("Not authorized")
         }
 
-        await Users.updateShare(req.cookies.userId, false)
-        await BanChannel.removeFromUser(req.cookies.userId)
+        const con = await Database.getConnection()
+        try{
+            await Users.updateShare(req.cookies.userId, false, con)
+            await BanChannel.removeFromUser(req.cookies.userId, con)
+        }catch(error){
+            throw new Error(error.message)
+        }finally{
+            Database.releaseConnection(con)
+        }
 
         return res.redirect("/")
     })
