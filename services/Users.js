@@ -99,6 +99,7 @@ module.exports = class Users{
             for(const line of result[0]){
                 user.subTo.push(line.g_sb_id)
             }
+            console.log(user)
             return user
         }catch (error){
             throw new Error(error.message)
