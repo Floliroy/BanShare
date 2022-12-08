@@ -2,13 +2,7 @@ const ApiTwitch = require("../services/ApiTwitch")
 const BanChannel = require("../services/BanChannel")
 const SubChannel = require("../services/SubChannel")
 const Users = require("../services/Users")
-
-function checkParams(body, params){
-    for(const param of params){
-        if(!body[param]) return false
-    }
-    return true
-}
+const Database = require("../services/Database")
 
 module.exports = function(app){
 

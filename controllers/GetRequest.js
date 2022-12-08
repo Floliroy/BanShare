@@ -1,5 +1,6 @@
 const ApiTwitch = require("../services/ApiTwitch")
 const Users = require("../services/Users")
+const Database = require("../services/Database")
 
 module.exports = function(app){
 
