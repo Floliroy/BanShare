@@ -23,6 +23,23 @@ module.exports = class SubChannel{
         }
     }
 
+    static async getFromUser(userId, con){
+        const connection = con ? con : await Database.getConnection()
+        try{
+            const result = await connection.execute("SELECT g_sb_sub FROM g_sub WHERE g_sb_id = ?", [userId])
+
+            const subs = new Array()
+            for(const line of result[0]){
+                subs.push(line.g_sb_sub)
+            }
+            return subs
+        }catch (error){
+            return new Array()
+        }finally{
+            if(!con) Database.releaseConnection(connection) 
+        }
+    }
+
     static async subToUser(user, sub, con){
         const connection = con ? con : await Database.getConnection()
         try{
@@ -30,6 +47,30 @@ module.exports = class SubChannel{
                 [user, sub]
             )
         }catch (error){
+        }finally{
+            if(!con) Database.releaseConnection(connection) 
+        }
+    }
+
+    static async unsubToUser(user, sub, con){
+        const connection = con ? con : await Database.getConnection()
+        try{
+            await connection.execute("DELETE FROM g_sub WHERE g_sb_id = ? AND g_sb_sub = ?", 
+                [user, sub]
+            )
+        }catch (error){
+            throw new Error(error.message)
+        }finally{
+            if(!con) Database.releaseConnection(connection) 
+        }
+    }
+
+    static async removeFromUser(user, con){
+        const connection = con ? con : await Database.getConnection()
+        try{
+            await connection.execute("DELETE FROM g_ban WHERE g_sb_id = ?", [user])
+        }catch (error){
+            throw new Error(error.message)
         }finally{
             if(!con) Database.releaseConnection(connection) 
         }

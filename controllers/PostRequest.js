@@ -1,5 +1,6 @@
 const ApiTwitch = require("../services/ApiTwitch")
 const BanChannel = require("../services/BanChannel")
+const SubChannel = require("../services/SubChannel")
 const Users = require("../services/Users")
 
 function checkParams(body, params){
@@ -18,6 +19,16 @@ module.exports = function(app){
         }
 
         await ApiTwitch.subToUser(req.body.subId, req.body.subName, req.cookies.userId)
+
+        return res.redirect("/")
+    })
+
+    app.post("/unsubTo", async function(req, res){
+        if(!await Users.checkConnected(req.cookies.userId, req.cookies.accessToken)){
+            return res.status(401).send("Not authorized")
+        }
+
+        await SubChannel.unsubToUser(req.body.subId, req.cookies.userId)
 
         return res.redirect("/")
     })

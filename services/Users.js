@@ -119,6 +119,18 @@ module.exports = class Users{
         }
     }
 
+    static async isSharing(userId, con){
+        const connection = con ? con : await Database.getConnection()
+        try{
+            let result = await connection.execute("SELECT g_ur_shr FROM g_usr WHERE g_ur_id = ?", [userId])
+            return result[0][0].g_ur_shr && result[0][0].g_ur_shr == 1
+        }catch (error){
+            throw new Error(error.message)
+        }finally{
+            if(!con) Database.releaseConnection(connection) 
+        }
+    }
+
     static async getAllDatas(con){
         const connection = con ? con : await Database.getConnection()
         try{

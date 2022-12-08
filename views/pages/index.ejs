@@ -37,11 +37,11 @@ function getSubs(userId){
                             <td class="text-center"><%=usr.bans%></td>
                             <td class="text-center"><%=getSubs(usr.id)%></td>
                             <td class="text-center"> 
-                                <form action="/subTo" method="POST">
+                                <form action="/<%=user.subTo.includes(usr.id) ? "un" : ""%>subTo" method="POST">
                                     <input type="hidden" id="subId" name="subId" value="<%=usr.id%>">
                                     <input type="hidden" id="subName" name="subName" value="<%=usr.name%>">
                                     <button class="btn btn-<%=user.subTo.includes(usr.id) ? 'info' : 'light'%>" <%=usr.id == req.cookies.userId ? "disabled" : ""%>>
-                                        <strong><%=user.subTo.includes(usr.id) ? "RE-" : ""%>SUB</strong>
+                                        <strong><%=user.subTo.includes(usr.id) ? "UN" : ""%>SUB</strong>
                                     </button>
                                 </form>
                             </td>
