@@ -1,14 +1,5 @@
 <% 
 const loginUrl = `https://id.twitch.tv/oauth2/authorize?client_id=ngi4q1u2mkhcgu563gl2w0alh2tj2d&redirect_uri=https://ban.floliroy.fr/login&response_type=code&scope=moderation:read+moderator:manage:banned_users+chat:read+chat:edit`
-
-function getSubs(userId){
-    for(const usr of allUsers){
-        if(userId == usr.id && !usr.name && !usr.image){
-            return usr.subs
-        } 
-    }
-    return 0
-}
 %>
 
 <%
@@ -35,7 +26,7 @@ function getSubs(userId){
                                 <%=usr.name%>
                             </td>
                             <td class="text-center"><%=usr.bans%></td>
-                            <td class="text-center"><%=getSubs(usr.id)%></td>
+                            <td class="text-center"><%=usr.subs%></td>
                             <td class="text-center"> 
                                 <form action="/<%=user.subTo.includes(usr.id) ? "un" : ""%>subTo" method="POST">
                                     <input type="hidden" id="subId" name="subId" value="<%=usr.id%>">

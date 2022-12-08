@@ -19,17 +19,6 @@ CREATE TABLE g_sub (
     PRIMARY KEY(g_sb_id, g_sb_sub)
 );
 
-CREATE OR REPLACE VIEW v_all_usr AS 
-SELECT u.g_ur_id, u.g_ur_name, u.g_ur_img, 0 subs, count(b.g_bn_ban) bans
-FROM g_usr u, g_ban b
-WHERE b.g_bn_id = u.g_ur_id
-AND u.g_ur_shr = 1
-GROUP BY u.g_ur_id
-UNION ALL
-SELECT s.g_sb_id, null g_ur_name, null g_ur_img, count(s.g_sb_sub) subs, 0 bans
-FROM g_sub s
-GROUP BY s.g_sb_id;
-
 CREATE TABLE tokens (
     userId BIGINT,
     accessToken VARCHAR(50),
@@ -38,3 +27,19 @@ CREATE TABLE tokens (
     obtainmentTimestamp BIGINT,
     PRIMARY KEY(userId)
 );
+
+CREATE OR REPLACE VIEW v_all_usr AS 
+SELECT g_ur_id, g_ur_name, g_ur_img, SUM(subs) subs, SUM(bans) bans FROM (
+	SELECT u.g_ur_id, u.g_ur_name, u.g_ur_img, 0 subs, count(b.g_bn_ban) bans
+	FROM g_usr u, g_ban b
+	WHERE b.g_bn_id = u.g_ur_id
+	AND u.g_ur_shr = 1
+	GROUP BY u.g_ur_id
+	UNION ALL
+	SELECT ur.g_ur_id, ur.g_ur_name, ur.g_ur_img, count(s.g_sb_sub) subs, 0 bans
+	FROM g_usr ur, g_sub s
+	WHERE s.g_sb_id = ur.g_ur_id
+	AND ur.g_ur_shr = 1
+	GROUP BY ur.g_ur_id
+) tmp
+GROUP BY g_ur_id, g_ur_name, g_ur_img;
