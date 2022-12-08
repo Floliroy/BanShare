@@ -40,8 +40,8 @@ function getSubs(userId){
                                 <form action="/subTo" method="POST">
                                     <input type="hidden" id="subId" name="subId" value="<%=usr.id%>">
                                     <input type="hidden" id="subName" name="subName" value="<%=usr.name%>">
-                                    <button class="btn btn-<%=user.subTo.includes(user.id) ? 'info' : 'light'%>" <%=usr.id == req.cookies.userId ? "disabled" : ""%>>
-                                        <strong><%=user.subTo.includes(user.id) ? "RE-" : ""%>SUB</strong>
+                                    <button class="btn btn-<%=user.subTo.includes(usr.id) ? 'info' : 'light'%>" <%=usr.id == req.cookies.userId ? "disabled" : ""%>>
+                                        <strong><%=user.subTo.includes(usr.id) ? "RE-" : ""%>SUB</strong>
                                     </button>
                                 </form>
                             </td>
