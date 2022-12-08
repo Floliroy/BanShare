@@ -94,12 +94,11 @@ module.exports = class Users{
             user.image = result[0][0].g_ur_img
             user.share = result[0][0].g_ur_shr && result[0][0].g_ur_shr == 1
 
-            result = await connection.execute("SELECT g_sb_id FROM g_sub WHERE g_sb_sub = ?", [user.name])
+            result = await connection.execute("SELECT g_sb_id FROM g_sub WHERE g_sb_sub = ?", [user.id])
             user.subTo = new Array()
             for(const line of result[0]){
                 user.subTo.push(line.g_sb_id)
             }
-            console.log(user)
             return user
         }catch (error){
             throw new Error(error.message)
