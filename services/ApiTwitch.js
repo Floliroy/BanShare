@@ -123,8 +123,14 @@ module.exports = class ApiTwitch {
             SubChannel.subToUser(subId, userId, con)
             const banneds = await BanChannel.getAllFromUser(subId, con)
 
+            const result = await api.moderation.getBannedUsers(userId)
+            const alreadyBanneds = new Array()
+            for(const banned of result.data){
+                if(banned.expiryDate) continue
+                alreadyBanneds.push(banned.userId)
+            }
             for(const banned of banneds){
-                if(!await api.moderation.checkUserBan(userId, banned)){
+                if(!alreadyBanneds.includes(banned)){
                     api.moderation.banUser(userId, userId, {duration: null, reason: `Ban copied from ${subName}'s channel`, userId: banned})  
                 }
             }
