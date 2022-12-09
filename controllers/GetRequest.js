@@ -31,7 +31,7 @@ module.exports = function(app){
         }
     })
 
-    app.get("/onBan", async function(req, res) {
+    app.post("/onBan", async function(req, res) {
         console.log(req)
     })
 
