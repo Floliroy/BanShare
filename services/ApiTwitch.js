@@ -16,6 +16,7 @@ const Tokens = require("./Tokens")
 
 const clientId = process.env.TWITCH_CLIENT_ID
 const clientSecret = process.env.TWITCH_CLIENT_SECRET
+const secret = process.env.SECRET
 
 async function getAccessToken(req, redirect){
     const result = await axios.post("https://id.twitch.tv/oauth2/token", {
@@ -47,22 +48,32 @@ async function getRefreshAuthProvider(userId, con){
     return authProvider
 }
 
-function setupOnBan(chatClient){
-    chatClient.onBan(async function(user, _, msg){
+async function setupOnBan(userId){
+    const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret)
+    const apiClient = new ApiClient({ authProvider })
+    const listener = new EventSubListener({
+        apiClient, adapter: new NgrokAdapter(), 
+        strictHostCheck: false, secret
+    })
+    await listener.listen()
+    await listener.subscribeToChannelBanEvents(userId, async function(event){
+        if(!event.isPermanent) return
+
         const connect = await Database.getConnection()
         try{
-            if(!await Users.isSharing(msg.channelId, connect)) return
+            if(!await Users.isSharing(event.broadcasterId, connect)) return
 
-            BanChannel.addBannedUser(msg.channelId, msg.targetUserId, connect)
-            console.log(`LOG: New ban into ${user}'s list: ${msg.user.value}`)
+            BanChannel.addBannedUser(event.broadcasterId, event.userId, connect)
+            console.log(`LOG: New ban into ${event.broadcasterDisplayName}'s list: ${event.userDisplayName}`)
+            console.log(`   reason -> ${event.reason}`)
 
-            const subs = await SubChannel.getFromUser(msg.channelId, connect)
+            const subs = await SubChannel.getFromUser(event.broadcasterId, connect)
             for(const sub of subs){
                 const auth = await getRefreshAuthProvider(sub, connect)
                 const api = new ApiClient({ authProvider: auth })
 
-                if(!await api.moderation.checkUserBan(sub, msg.targetUserId)){
-                    //api.moderation.banUser(sub, sub, {duration: null, reason: `Ban copied from ${user}'s channel`, userId: msg.targetUserId})    
+                if(!await api.moderation.checkUserBan(sub, event.userId)){
+                    //api.moderation.banUser(sub, sub, {duration: null, reason: `Ban copied from ${user}'s channel`, userId: event.userId})    
                 }            
             }
         }catch(error){
@@ -81,31 +92,7 @@ module.exports = class ApiTwitch {
 
             for(const share of allShare){
                 console.log(`INFO: Listener on ${share.name} channel`)
-
-                //const authProvider = await getRefreshAuthProvider(share.id, con)
-                
-                const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret)
-                const apiClient = new ApiClient({ authProvider })
-                const listener = new EventSubListener({
-                    apiClient, adapter: new NgrokAdapter(), strictHostCheck: false,
-                    secret: "fzeojoezjgoezjgoezgoezjgoez"
-                })
-                await listener.listen()
-                await listener.subscribeToChannelBanEvents(share.id, event => {
-                    console.log("broadcasterDisplayName:", event.broadcasterDisplayName)
-                    console.log("broadcasterId:", event.broadcasterId)
-                    console.log("broadcasterName:", event.broadcasterName)
-                    console.log("endDate:", event.endDate)
-                    console.log("isPermanent:", event.isPermanent)
-                    console.log("moderatorDisplayName:", event.moderatorDisplayName)
-                    console.log("moderatorId:", event.moderatorId)
-                    console.log("moderatorName:", event.moderatorName)
-                    console.log("reason:", event.reason)
-                    console.log("startDate:", event.startDate)
-                    console.log("userDisplayName:", event.userDisplayName)
-                    console.log("userId:", event.userId)
-                    console.log("userName:", event.userName)
-                })
+                await setupOnBan(share.id)
 
                 /*const chatClient = new ChatClient({ authProvider, channels: [share.name.toLowerCase()] })
                 await chatClient.connect()
@@ -137,15 +124,15 @@ module.exports = class ApiTwitch {
     static async shareBans(userId){
         const con = await Database.getConnection()
         try{
-            const userName = await Users.getUserNameWithId(userId, con)
             const authProvider = await getRefreshAuthProvider(userId, con)
             const api = new ApiClient({ authProvider })
     
             const banneds = await api.moderation.getBannedUsers(userId)
 
-            const chatClient = new ChatClient({ authProvider, channels: [userName.toLowerCase()] })
+            await setupOnBan(userId)
+            /*const chatClient = new ChatClient({ authProvider, channels: [userName.toLowerCase()] })
             await chatClient.connect()
-            setupOnBan(chatClient)
+            setupOnBan(chatClient)*/
 
             Users.updateShare(userId, true, con)
             BanChannel.addBannedsUsers(userId, banneds.data, con)
