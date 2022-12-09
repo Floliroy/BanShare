@@ -26,14 +26,21 @@ async function getAccessToken(req, redirect){
     return result.data
 }
 
+const mapAuthProvider = new Map()
 async function getRefreshAuthProvider(userId, con){
+    if(mapAuthProvider.has(userId)){
+        return mapAuthProvider.get(userId)
+    }
+
     const tokenData = await Tokens.get(userId, con)
-    return new RefreshingAuthProvider({
+    const authProvider = new RefreshingAuthProvider({
         clientId, clientSecret,
         onRefresh: async function(newTokenData){
             await Tokens.save(userId, newTokenData)
         }
     }, tokenData)
+    mapAuthProvider.set(userId, authProvider)
+    return authProvider
 }
 
 module.exports = class ApiTwitch {
