@@ -25,7 +25,7 @@ module.exports = function(app){
             const allUsers = await Users.getAllDatas(con)
             return res.render("partials/layout", {body: "index", user: user, allUsers: allUsers, req: req})
         }catch(error){
-            return res.sendStatus(404)
+            return res.render("partials/layout", {body: "index", req: req})
         }finally{
             Database.releaseConnection(con)
         }

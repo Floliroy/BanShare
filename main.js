@@ -4,7 +4,7 @@ require("dotenv").config()
  * My libraries
  */
 const ApiTwitch = require("./services/ApiTwitch")
-//ApiTwitch.initListener()
+ApiTwitch.initListener()
 
 const express = require("express")
 const cookieParser = require("cookie-parser")
