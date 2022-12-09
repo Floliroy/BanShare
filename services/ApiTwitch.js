@@ -1,6 +1,6 @@
 const { ApiClient } = require("@twurple/api")
 const { StaticAuthProvider, RefreshingAuthProvider, ClientCredentialsAuthProvider } = require("@twurple/auth")
-const { EventSubListener, ReverseProxyAdapter } = require("@twurple/eventsub")
+const { EventSubMiddleware } = require("@twurple/eventsub")
 
 const axios = require("axios")
 
@@ -14,8 +14,7 @@ const clientId = process.env.TWITCH_CLIENT_ID
 const clientSecret = process.env.TWITCH_CLIENT_SECRET
 const secret = process.env.SECRET
 
-let baseApiClient
-let adapter
+let listener
 
 async function getAccessToken(req, redirect){
     const result = await axios.post("https://id.twitch.tv/oauth2/token", {
@@ -73,8 +72,6 @@ async function getRefreshAuthProvider(userId, con){
 }*/
 
 async function setupOnBan(userId){
-    const listener = new EventSubListener({apiClient: baseApiClient, adapter, secret, strictHostCheck: false})
-    await listener.listen()
     await listener.subscribeToChannelBanEvents(userId, async function(event){
         if(!event.isPermanent) return
 
@@ -104,10 +101,19 @@ async function setupOnBan(userId){
 
 module.exports = class ApiTwitch {
 
-    static async initListener(){
+    static async initListener(app){
         const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret)
-        baseApiClient = new ApiClient({ authProvider })
-        adapter = new ReverseProxyAdapter({ hostName: "ban.floliroy.fr" })
+        const apiClient = new ApiClient({ authProvider })
+        const listener = new EventSubMiddleware({
+            apiClient, secret,
+            hostName: "ban.floliroy.fr",
+            pathPrefix: "/twitch"
+        })
+        await listener.apply(app)
+    }
+
+    static async startListener(){
+        await listener.markAsReady()
 
         const con = await Database.getConnection()
         try{

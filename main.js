@@ -4,7 +4,6 @@ require("dotenv").config()
  * My libraries
  */
 const ApiTwitch = require("./services/ApiTwitch")
-ApiTwitch.initListener()
 
 const express = require("express")
 const cookieParser = require("cookie-parser")
@@ -33,8 +32,11 @@ PostRequest(app)
 app.use(function (req, res){
     return res.sendStatus(404)
 })
+
+ApiTwitch.initListener(app)
 app.listen(process.env.PORT, function(){
     console.log(`Server running on port ${process.env.PORT}!`)
+    ApiTwitch.startListener()
 })
 
 /**
