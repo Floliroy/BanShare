@@ -1,6 +1,6 @@
 const { ApiClient } = require("@twurple/api")
 
-const { StaticAuthProvider, RefreshingAuthProvider } = require("@twurple/auth")
+const { StaticAuthProvider, RefreshingAuthProvider, ClientCredentialsAuthProvider } = require("@twurple/auth")
 const { ChatClient } = require("@twurple/chat")
 
 const { NgrokAdapter } = require("@twurple/eventsub-ngrok")
@@ -82,8 +82,9 @@ module.exports = class ApiTwitch {
             for(const share of allShare){
                 console.log(`INFO: Listener on ${share.name} channel`)
 
-                const authProvider = await getRefreshAuthProvider(share.id, con)
+                //const authProvider = await getRefreshAuthProvider(share.id, con)
                 
+                const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret)
                 const apiClient = new ApiClient({ authProvider })
                 const listener = new EventSubListener({
                     apiClient, adapter: new NgrokAdapter(),
