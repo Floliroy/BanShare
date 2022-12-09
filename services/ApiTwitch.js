@@ -113,7 +113,7 @@ module.exports = class ApiTwitch {
     }
 
     static async startListener(){
-        await middleware.markAsReady()
+        await listener.markAsReady()
         
         const con = await Database.getConnection()
         try{
