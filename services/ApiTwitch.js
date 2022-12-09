@@ -57,7 +57,6 @@ async function setupOnBan(userId){
 
             BanChannel.addBannedUser(event.broadcasterId, event.userId, connect)
             console.log(`LOG: New ban into ${event.broadcasterDisplayName}'s list: ${event.userDisplayName}`)
-            //console.log(`   reason -> ${event.reason}`)
 
             const subs = await SubChannel.getFromUser(event.broadcasterId, connect)
             for(const sub of subs){
