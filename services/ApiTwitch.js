@@ -105,9 +105,9 @@ module.exports = class ApiTwitch {
         const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret)
         const apiClient = new ApiClient({ authProvider })
         await apiClient.eventSub.deleteAllSubscriptions()
-        
+
         listener = new EventSubMiddleware({
-            apiClient, secret,
+            apiClient, secret, strictHostCheck: true,
             hostName: "ban.floliroy.fr",
             pathPrefix: "/twitch"
         })
