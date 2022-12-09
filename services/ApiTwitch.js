@@ -90,7 +90,7 @@ async function setupOnBan(userId){
                 const api = new ApiClient({ authProvider: auth })
 
                 if(!await api.moderation.checkUserBan(sub, event.userId)){
-                    api.moderation.banUser(sub, sub, {duration: null, reason: `Ban copied from ${user}'s channel`, userId: event.userId})    
+                    api.moderation.banUser(sub, sub, {duration: null, reason: `Ban copied from ${event.broadcasterDisplayName}'s channel`, userId: event.userId})    
                 }            
             }
         }catch(error){
