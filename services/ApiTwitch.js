@@ -87,11 +87,11 @@ module.exports = class ApiTwitch {
                 const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret)
                 const apiClient = new ApiClient({ authProvider })
                 const listener = new EventSubListener({
-                    apiClient, adapter: new NgrokAdapter(),
-                    secret: "TWITCHBOT_SIGNING_SECRET"
+                    apiClient, adapter: new NgrokAdapter(), strictHostCheck: false,
+                    secret: "fzeojoezjgoezjgoezgoezjgoez"
                 })
                 await listener.listen()
-                await listener.subscribeToChannelBanEvents(share.id, (event) => {
+                await listener.subscribeToChannelBanEvents(share.id, event => {
                     console.log("broadcasterDisplayName:", event.broadcasterDisplayName)
                     console.log("broadcasterId:", event.broadcasterId)
                     console.log("broadcasterName:", event.broadcasterName)
