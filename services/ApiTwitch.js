@@ -2,7 +2,6 @@ const { ApiClient } = require("@twurple/api")
 
 const { StaticAuthProvider, RefreshingAuthProvider } = require("@twurple/auth")
 const { ChatClient } = require("@twurple/chat")
-const { PubSubClient } = require("@twurple/pubsub")
 const axios = require("axios")
 
 const Database = require("./Database")
@@ -51,22 +50,18 @@ module.exports = class ApiTwitch {
         try{
             const allShare = await Users.getAllShare(con)
 
-            const pubSubClient = new PubSubClient()
             for(const share of allShare){
                 console.log(`INFO: Listener on ${share.name} channel`)
 
                 const authProvider = await getRefreshAuthProvider(share.id, con)
-                const pubSub = await pubSubClient.registerUserListener(authProvider)
-                pubSubClient.onModAction(pubSub, share.id, (message) => {
-                    const util = require('util')
-                    console.log(util.inspect(message))
-                })
 
+                const api = new ApiClient({ authProvider })
+                await api.eventSub.subscribeToChannelBanEvents(`${share.id}`, { callbackUrl: "https://ban.floliroy.fr" })
 
-                //const chatClient = new ChatClient({ authProvider, channels: [share.name.toLowerCase()] })
-                //await chatClient.connect()
+                /*const chatClient = new ChatClient({ authProvider, channels: [share.name.toLowerCase()] })
+                await chatClient.connect()
     
-                /*chatClient.onBan(async function(user, _, msg){
+                chatClient.onBan(async function(user, _, msg){
                     const connect = await Database.getConnection()
                     try{
                         if(!await Users.isSharing(msg.channelId, connect)) return
@@ -87,8 +82,8 @@ module.exports = class ApiTwitch {
                     }finally{
                         Database.releaseConnection(connect)
                     }
-                })*/
-            }
+                })
+            }*/
             
             console.log("INFO: Logged on Twitch Bot")
         }catch(error){

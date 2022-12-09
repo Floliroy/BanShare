@@ -21,11 +21,12 @@ module.exports = function(app){
     app.get("/", async function(req, res){
         const con = await Database.getConnection()
         try{
+            console.log(req)
             const user = await Users.getDatas(req.cookies.userId, con)
             const allUsers = await Users.getAllDatas(con)
             return res.render("partials/layout", {body: "index", user: user, allUsers: allUsers, req: req})
         }catch(error){
-            return res.render("partials/layout", {body: "index", req: req})
+            return res.redirect("/logout")
         }finally{
             Database.releaseConnection(con)
         }
