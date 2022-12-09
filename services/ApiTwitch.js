@@ -58,7 +58,7 @@ module.exports = class ApiTwitch {
                 //await chatClient.connect()
 
                 const apiClient = new ApiClient({ authProvider })
-                await apiClient.eventSub.subscribeToChannelBanEvents(share.id, {callbackUrl: "https://ban.floliroy.fr"})
+                await apiClient.eventSub.subscribeToChannelBanEvents(`${share.id}`, {callbackUrl: "https://ban.floliroy.fr"})
     
                 /*chatClient.onBan(async function(user, _, msg){
                     const connect = await Database.getConnection()
