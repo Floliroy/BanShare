@@ -2,7 +2,6 @@ const { ApiClient } = require("@twurple/api")
 
 const { StaticAuthProvider, RefreshingAuthProvider } = require("@twurple/auth")
 const { ChatClient } = require("@twurple/chat")
-const fs = require("fs")
 const axios = require("axios")
 
 const Database = require("./Database")
