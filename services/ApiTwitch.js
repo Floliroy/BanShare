@@ -71,8 +71,9 @@ async function getRefreshAuthProvider(userId, con){
     })
 }*/
 
+const mapListener = new Map()
 async function setupOnBan(userId){
-    await listener.subscribeToChannelBanEvents(userId, async function(event){
+    const userListener = await listener.subscribeToChannelBanEvents(userId, async function(event){
         if(!event.isPermanent) return
 
         const connect = await Database.getConnection()
@@ -97,6 +98,7 @@ async function setupOnBan(userId){
             Database.releaseConnection(connect)
         }
     })
+    mapListener.set(userId, userListener)
 }
 
 module.exports = class ApiTwitch {
@@ -171,6 +173,12 @@ module.exports = class ApiTwitch {
             throw new Error(error.message)
         }finally{
             Database.releaseConnection(con)
+        }
+    }
+
+    static async unshareBans(userId){
+        if(mapListener.has(userId)){
+            mapListener.get(userId).stop()
         }
     }
 

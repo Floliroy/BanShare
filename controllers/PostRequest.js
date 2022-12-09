@@ -47,6 +47,7 @@ module.exports = function(app){
         try{
             await Users.updateShare(req.cookies.userId, false, con)
             await BanChannel.removeFromUser(req.cookies.userId, con)
+            await ApiTwitch.unshareBans(req.cookies.userId)
         }catch(error){
             throw new Error(error.message)
         }finally{
