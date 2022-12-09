@@ -33,11 +33,14 @@ app.use(function (req, res){
     return res.sendStatus(404)
 })
 
-ApiTwitch.initListener(app)
-app.listen(process.env.PORT, function(){
-    console.log(`Server running on port ${process.env.PORT}!`)
-    ApiTwitch.startListener()
-})
+async function start(){
+    await ApiTwitch.initListener(app)
+    app.listen(process.env.PORT, function(){
+        console.log(`Server running on port ${process.env.PORT}!`)
+        await ApiTwitch.startListener()
+    })
+}
+start()
 
 /**
  * To avoid crashes
