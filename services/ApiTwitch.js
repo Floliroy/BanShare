@@ -74,7 +74,6 @@ async function getRefreshAuthProvider(userId, con){
 const mapListener = new Map()
 async function setupOnBan(userId){
     const userListener = await listener.subscribeToChannelBanEvents(userId, async function(event){
-        console.log("TEST")
         if(!event.isPermanent) return
 
         const connect = await Database.getConnection()
@@ -91,7 +90,7 @@ async function setupOnBan(userId){
                 const api = new ApiClient({ authProvider: auth })
 
                 if(!await api.moderation.checkUserBan(sub, event.userId)){
-                    //api.moderation.banUser(sub, sub, {duration: null, reason: `Ban copied from ${user}'s channel`, userId: event.userId})    
+                    api.moderation.banUser(sub, sub, {duration: null, reason: `Ban copied from ${user}'s channel`, userId: event.userId})    
                 }            
             }
         }catch(error){
