@@ -15,6 +15,7 @@
     "@twurple/api": "^5.2.7",
     "@twurple/auth": "^5.2.7",
     "@twurple/chat": "^5.2.7",
+    "@twurple/eventsub": "^5.2.7",
     "axios": "^1.2.1",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",

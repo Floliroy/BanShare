@@ -79,10 +79,14 @@ module.exports = class ApiTwitch {
                 console.log(`INFO: Listener on ${share.name} channel`)
 
                 const authProvider = await getRefreshAuthProvider(share.id, con)
+                
+                const api = new ApiClient({ authProvider })
+                console.log(share.id.toString())
+                api.eventSub.subscribeToChannelBanEvents(share.id.toString(), { callbackUrl: "https://ban.floliroy.fr" })
 
-                const chatClient = new ChatClient({ authProvider, channels: [share.name.toLowerCase()] })
+                /*const chatClient = new ChatClient({ authProvider, channels: [share.name.toLowerCase()] })
                 await chatClient.connect()
-                setupOnBan(chatClient)
+                setupOnBan(chatClient)*/
             }
             
             console.log("INFO: Logged on Twitch Bot")
@@ -115,7 +119,7 @@ module.exports = class ApiTwitch {
             const api = new ApiClient({ authProvider })
     
             const banneds = await api.moderation.getBannedUsers(userId)
-            
+
             const chatClient = new ChatClient({ authProvider, channels: [userName.toLowerCase()] })
             await chatClient.connect()
             setupOnBan(chatClient)
