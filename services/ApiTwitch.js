@@ -82,7 +82,7 @@ module.exports = class ApiTwitch {
                 
                 const api = new ApiClient({ authProvider })
                 console.log(share.id.toString())
-                api.eventSub.subscribeToChannelBanEvents(share.id, { callbackUrl: "https://ban.floliroy.fr" })
+                api.eventSub.subscribeToChannelBanEvents(`${share.id}`, { callbackUrl: "https://ban.floliroy.fr" })
 
                 /*const chatClient = new ChatClient({ authProvider, channels: [share.name.toLowerCase()] })
                 await chatClient.connect()
