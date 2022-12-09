@@ -48,6 +48,31 @@ async function getRefreshAuthProvider(userId, con){
     return authProvider
 }
 
+/*function setupOnBan(chatClient){
+    chatClient.onBan(async function(user, _, msg){
+        const connect = await Database.getConnection()
+        try{
+            if(!await Users.isSharing(msg.channelId, connect)) return
+
+            BanChannel.addBannedUser(msg.channelId, msg.targetUserId, connect)
+            console.log(`LOG: New ban into ${user}'s list: ${msg.user.value}`)
+
+            const subs = await SubChannel.getFromUser(msg.channelId, connect)
+            for(const sub of subs){
+                const auth = await getRefreshAuthProvider(sub, connect)
+                const api = new ApiClient({ authProvider: auth })
+
+                if(!await api.moderation.checkUserBan(sub, msg.targetUserId)){
+                    //api.moderation.banUser(sub, sub, {duration: null, reason: `Ban copied from ${user}'s channel`, userId: msg.targetUserId})    
+                }            
+            }
+        }catch(error){
+        }finally{
+            Database.releaseConnection(connect)
+        }
+    })
+}*/
+
 async function setupOnBan(userId){
     const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret)
     const apiClient = new ApiClient({ authProvider })
