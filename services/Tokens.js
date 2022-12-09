@@ -11,7 +11,6 @@ module.exports = class Tokens{
             token.scope = [
                 "chat:edit",
                 "chat:read",
-                "channel:moderate",
                 "moderation:read",
                 "moderator:manage:banned_users"
             ]
