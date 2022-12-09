@@ -2,6 +2,7 @@ const { ApiClient } = require("@twurple/api")
 
 const { StaticAuthProvider, RefreshingAuthProvider } = require("@twurple/auth")
 const { ChatClient } = require("@twurple/chat")
+const { PubSubClient } = require("@twurple/pubsub")
 const axios = require("axios")
 
 const Database = require("./Database")
@@ -50,15 +51,19 @@ module.exports = class ApiTwitch {
         try{
             const allShare = await Users.getAllShare(con)
 
+            const pubSubClient = new PubSubClient()
             for(const share of allShare){
                 console.log(`INFO: Listener on ${share.name} channel`)
 
                 const authProvider = await getRefreshAuthProvider(share.id, con)
+                const pubSub = await pubSubClient.registerUserListener(authProvider)
+                pubSub.onModAction(share.id, share.id, (message) => {
+                    console.log(message)
+                })
+
+
                 //const chatClient = new ChatClient({ authProvider, channels: [share.name.toLowerCase()] })
                 //await chatClient.connect()
-
-                const apiClient = new ApiClient({ authProvider })
-                await apiClient.eventSub.subscribeToChannelBanEvents(`${share.id}`, {callbackUrl: "https://ban.floliroy.fr/onBan"})
     
                 /*chatClient.onBan(async function(user, _, msg){
                     const connect = await Database.getConnection()
