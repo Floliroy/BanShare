@@ -57,7 +57,7 @@ module.exports = class ApiTwitch {
 
                 const authProvider = await getRefreshAuthProvider(share.id, con)
                 const pubSub = await pubSubClient.registerUserListener(authProvider)
-                pubSub.onModAction(share.id, share.id, (message) => {
+                pubSubClient.onModAction(pubSub, share.id, (message) => {
                     console.log(message)
                 })
 
