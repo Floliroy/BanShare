@@ -74,6 +74,7 @@ async function getRefreshAuthProvider(userId, con){
 const mapListener = new Map()
 async function setupOnBan(userId){
     const userListener = await listener.subscribeToChannelBanEvents(userId, async function(event){
+        console.log("TEST")
         if(!event.isPermanent) return
 
         const connect = await Database.getConnection()
