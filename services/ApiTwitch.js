@@ -43,6 +43,31 @@ async function getRefreshAuthProvider(userId, con){
     return authProvider
 }
 
+function setupOnBan(chatClient){
+    chatClient.onBan(async function(user, _, msg){
+        const connect = await Database.getConnection()
+        try{
+            if(!await Users.isSharing(msg.channelId, connect)) return
+
+            BanChannel.addBannedUser(msg.channelId, msg.targetUserId, connect)
+            console.log(`LOG: New ban into ${user}'s list: ${msg.user.value}`)
+
+            const subs = await SubChannel.getFromUser(msg.channelId, connect)
+            for(const sub of subs){
+                const auth = await getRefreshAuthProvider(sub, connect)
+                const api = new ApiClient({ authProvider: auth })
+
+                if(!await api.moderation.checkUserBan(sub, msg.targetUserId)){
+                    //api.moderation.banUser(sub, sub, {duration: null, reason: `Ban copied from ${user}'s channel`, userId: msg.targetUserId})    
+                }            
+            }
+        }catch(error){
+        }finally{
+            Database.releaseConnection(connect)
+        }
+    })
+}
+
 module.exports = class ApiTwitch {
 
     static async initListener(){
@@ -55,34 +80,9 @@ module.exports = class ApiTwitch {
 
                 const authProvider = await getRefreshAuthProvider(share.id, con)
 
-                const api = new ApiClient({ authProvider })
-                await api.eventSub.subscribeToChannelBanEvents(`${share.id}`, { callbackUrl: "https://ban.floliroy.fr" })
-
-                /*const chatClient = new ChatClient({ authProvider, channels: [share.name.toLowerCase()] })
+                const chatClient = new ChatClient({ authProvider, channels: [share.name.toLowerCase()] })
                 await chatClient.connect()
-    
-                chatClient.onBan(async function(user, _, msg){
-                    const connect = await Database.getConnection()
-                    try{
-                        if(!await Users.isSharing(msg.channelId, connect)) return
-
-                        BanChannel.addBannedUser(msg.channelId, msg.targetUserId, connect)
-                        console.log(`LOG: New ban into ${user}'s list: ${msg.user.value}`)
-        
-                        const subs = await SubChannel.getFromUser(msg.channelId, connect)
-                        for(const sub of subs){
-                            const auth = await getRefreshAuthProvider(sub, connect)
-                            const api = new ApiClient({ authProvider: auth })
-    
-                            if(!await api.moderation.checkUserBan(sub, msg.targetUserId)){
-                                //api.moderation.banUser(sub, sub, {duration: null, reason: `Ban copied from ${user}'s channel`, userId: msg.targetUserId})    
-                            }            
-                        }
-                    }catch(error){
-                    }finally{
-                        Database.releaseConnection(connect)
-                    }
-                })*/
+                setupOnBan(chatClient)
             }
             
             console.log("INFO: Logged on Twitch Bot")
@@ -110,10 +110,15 @@ module.exports = class ApiTwitch {
     static async shareBans(userId){
         const con = await Database.getConnection()
         try{
+            const userName = await Users.getUserNameWithId(userId, con)
             const authProvider = await getRefreshAuthProvider(userId, con)
             const api = new ApiClient({ authProvider })
     
             const banneds = await api.moderation.getBannedUsers(userId)
+            
+            const chatClient = new ChatClient({ authProvider, channels: [userName.toLowerCase()] })
+            await chatClient.connect()
+            setupOnBan(chatClient)
 
             Users.updateShare(userId, true, con)
             BanChannel.addBannedsUsers(userId, banneds.data, con)
@@ -144,27 +149,6 @@ module.exports = class ApiTwitch {
                     api.moderation.banUser(userId, userId, {duration: null, reason: `Ban copied from ${subName}'s channel`, userId: banned})  
                 }
             }
-            
-            const auth = await getRefreshAuthProvider(subId, con)
-            const chatClient = new ChatClient({ authProvider: auth, channels: [subName.toLowerCase()] })
-            await chatClient.connect()
-
-            chatClient.onBan(async function(user, _, msg){
-                const connect = await Database.getConnection()
-                try{
-                    if(!await Users.isSharing(subId, connect)) return
-
-                    BanChannel.addBannedUser(subId, msg.targetUserId, connect)
-                    console.log(`LOG: New ban into ${user}'s list: ${msg.user.value}`)
-                    
-                    if(!await api.moderation.checkUserBan(userId, msg.targetUserId)){
-                        //api.moderation.banUser(userId, userId, {duration: null, reason: `Ban copied from ${user}'s channel`, userId: msg.targetUserId})    
-                    }   
-                }catch(error){
-                }finally{
-                    Database.releaseConnection(connect)
-                }        
-            })
 
             console.log(`LOG: User ${userId} subbed to ${subName}'s ban list`)
         }catch(error){

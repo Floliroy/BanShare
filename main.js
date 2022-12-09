@@ -31,8 +31,6 @@ PostRequest(app)
  * Lancement serveur web
  */
 app.use(function (req, res){
-
-    console.log(req)
     return res.sendStatus(404)
 })
 app.listen(process.env.PORT, function(){
