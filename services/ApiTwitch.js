@@ -82,8 +82,8 @@ module.exports = class ApiTwitch {
                     }finally{
                         Database.releaseConnection(connect)
                     }
-                })
-            }*/
+                })*/
+            }
             
             console.log("INFO: Logged on Twitch Bot")
         }catch(error){
