@@ -2,6 +2,10 @@ const { ApiClient } = require("@twurple/api")
 
 const { StaticAuthProvider, RefreshingAuthProvider } = require("@twurple/auth")
 const { ChatClient } = require("@twurple/chat")
+
+const { NgrokAdapter } = require("@twurple/eventsub-ngrok")
+const { EventSubListener } = require("@twurple/eventsub")
+
 const axios = require("axios")
 
 const Database = require("./Database")
@@ -80,9 +84,27 @@ module.exports = class ApiTwitch {
 
                 const authProvider = await getRefreshAuthProvider(share.id, con)
                 
-                const api = new ApiClient({ authProvider })
-                console.log(share.id.toString())
-                api.eventSub.subscribeToChannelBanEvents(`${share.id}`, { callbackUrl: "https://ban.floliroy.fr" })
+                const apiClient = new ApiClient({ authProvider })
+                const listener = new EventSubListener({
+                    apiClient, adapter: new NgrokAdapter(),
+                    secret: "TWITCHBOT_SIGNING_SECRET"
+                })
+                await listener.listen()
+                await listener.subscribeToChannelBanEvents(share.id, (event) => {
+                    console.log("broadcasterDisplayName:", event.broadcasterDisplayName)
+                    console.log("broadcasterId:", event.broadcasterId)
+                    console.log("broadcasterName:", event.broadcasterName)
+                    console.log("endDate:", event.endDate)
+                    console.log("isPermanent:", event.isPermanent)
+                    console.log("moderatorDisplayName:", event.moderatorDisplayName)
+                    console.log("moderatorId:", event.moderatorId)
+                    console.log("moderatorName:", event.moderatorName)
+                    console.log("reason:", event.reason)
+                    console.log("startDate:", event.startDate)
+                    console.log("userDisplayName:", event.userDisplayName)
+                    console.log("userId:", event.userId)
+                    console.log("userName:", event.userName)
+                })
 
                 /*const chatClient = new ChatClient({ authProvider, channels: [share.name.toLowerCase()] })
                 await chatClient.connect()
