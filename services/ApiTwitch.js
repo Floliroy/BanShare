@@ -104,7 +104,7 @@ module.exports = class ApiTwitch {
     static async initListener(app){
         const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret)
         const apiClient = new ApiClient({ authProvider })
-        const listener = new EventSubMiddleware({
+        listener = new EventSubMiddleware({
             apiClient, secret,
             hostName: "ban.floliroy.fr",
             pathPrefix: "/twitch"
@@ -113,8 +113,8 @@ module.exports = class ApiTwitch {
     }
 
     static async startListener(){
-        await listener.markAsReady()
-
+        await middleware.markAsReady()
+        
         const con = await Database.getConnection()
         try{
             const allShare = await Users.getAllShare(con)
