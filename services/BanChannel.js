@@ -24,7 +24,6 @@ module.exports = class BanChannel{
             }
             await connection.query("INSERT INTO g_ban (g_bn_id, g_bn_ban) VALUES ?", [values])
         }catch (error){
-            throw new Error(error.message)
         }finally{
             if(!con) Database.releaseConnection(connection) 
         }
