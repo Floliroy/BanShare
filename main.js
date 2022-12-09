@@ -29,10 +29,6 @@ PostRequest(app)
 /**
  * Lancement serveur web
  */
-app.use(function (req, res){
-    return res.sendStatus(404)
-})
-
 async function start(){
     await ApiTwitch.initListener(app)
     app.listen(process.env.PORT, async function(){
