@@ -1,10 +1,6 @@
 const { ApiClient } = require("@twurple/api")
-
 const { StaticAuthProvider, RefreshingAuthProvider, ClientCredentialsAuthProvider } = require("@twurple/auth")
-const { ChatClient } = require("@twurple/chat")
-
-const { NgrokAdapter } = require("@twurple/eventsub-ngrok")
-const { EventSubListener } = require("@twurple/eventsub")
+const { EventSubListener, EnvPortAdapter } = require("@twurple/eventsub")
 
 const axios = require("axios")
 
@@ -17,6 +13,9 @@ const Tokens = require("./Tokens")
 const clientId = process.env.TWITCH_CLIENT_ID
 const clientSecret = process.env.TWITCH_CLIENT_SECRET
 const secret = process.env.SECRET
+
+let baseApiClient
+let adapter
 
 async function getAccessToken(req, redirect){
     const result = await axios.post("https://id.twitch.tv/oauth2/token", {
@@ -74,12 +73,7 @@ async function getRefreshAuthProvider(userId, con){
 }*/
 
 async function setupOnBan(userId){
-    const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret)
-    const apiClient = new ApiClient({ authProvider })
-    const listener = new EventSubListener({
-        apiClient, adapter: new NgrokAdapter(), 
-        strictHostCheck: false, secret
-    })
+    const listener = new EventSubListener({apiClient: baseApiClient, adapter, secret, strictHostCheck: false})
     await listener.listen()
     await listener.subscribeToChannelBanEvents(userId, async function(event){
         if(!event.isPermanent) return
@@ -111,6 +105,13 @@ async function setupOnBan(userId){
 module.exports = class ApiTwitch {
 
     static async initListener(){
+        const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret)
+        baseApiClient = new ApiClient({ authProvider })
+
+        adapter = new EnvPortAdapter({
+            hostName: "ban.floliroy.fr"
+        })
+
         const con = await Database.getConnection()
         try{
             const allShare = await Users.getAllShare(con)
