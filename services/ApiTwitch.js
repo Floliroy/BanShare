@@ -1,6 +1,7 @@
 const { ApiClient } = require("@twurple/api")
 const { StaticAuthProvider, RefreshingAuthProvider, ClientCredentialsAuthProvider } = require("@twurple/auth")
-const { EventSubListener, EnvPortAdapter } = require("@twurple/eventsub")
+const { EventSubListener, DirectConnectionAdapter } = require("@twurple/eventsub")
+const fs = require("fs")
 
 const axios = require("axios")
 
@@ -14,6 +15,8 @@ const clientId = process.env.TWITCH_CLIENT_ID
 const clientSecret = process.env.TWITCH_CLIENT_SECRET
 const secret = process.env.SECRET
 
+const privateKey = fs.readFileSync("/etc/letsencrypt/live/ban.floliroy.fr/privkey.pem", "utf8")
+const certificate = fs.readFileSync("/etc/letsencrypt/live/ban.floliroy.fr/cert.pem", "utf8")
 let baseApiClient
 let adapter
 
@@ -108,8 +111,12 @@ module.exports = class ApiTwitch {
         const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret)
         baseApiClient = new ApiClient({ authProvider })
 
-        adapter = new EnvPortAdapter({
-            hostName: "ban.floliroy.fr"
+        adapter = new DirectConnectionAdapter({
+            hostName: "ban.floliroy.fr",
+            sslCert: {
+                key: privateKey,
+                cert: certificate
+            }
         })
 
         const con = await Database.getConnection()
