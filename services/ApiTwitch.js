@@ -54,13 +54,13 @@ module.exports = class ApiTwitch {
                 console.log(`INFO: Listener on ${share.name} channel`)
 
                 const authProvider = await getRefreshAuthProvider(share.id, con)
-                const chatClient = new ChatClient({ authProvider, channels: [share.name.toLowerCase()] })
-                await chatClient.connect()
+                //const chatClient = new ChatClient({ authProvider, channels: [share.name.toLowerCase()] })
+                //await chatClient.connect()
 
                 const apiClient = new ApiClient({ authProvider })
-                apiClient.eventSub.subscribeToChannelBanEvents(share.id, {callbackUrl: "https://ban.floliroy.fr/onBan"})
+                apiClient.eventSub.subscribeToChannelBanEvents(share.id, {callbackUrl: "https://ban.floliroy.fr"})
     
-                chatClient.onBan(async function(user, _, msg){
+                /*chatClient.onBan(async function(user, _, msg){
                     const connect = await Database.getConnection()
                     try{
                         if(!await Users.isSharing(msg.channelId, connect)) return
@@ -81,7 +81,7 @@ module.exports = class ApiTwitch {
                     }finally{
                         Database.releaseConnection(connect)
                     }
-                })
+                })*/
             }
             
             console.log("INFO: Logged on Twitch Bot")

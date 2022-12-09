@@ -31,7 +31,7 @@ module.exports = function(app){
         }
     })
 
-    app.post("/onBan", async function(req, res) {
+    app.post("/eventsub/subscriptions", async function(req, res) {
         console.log(req)
     })
 
