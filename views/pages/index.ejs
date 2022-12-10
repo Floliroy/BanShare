@@ -44,6 +44,35 @@ const loginUrl = `https://id.twitch.tv/oauth2/authorize?client_id=ngi4q1u2mkhcgu
             </tbody>
         </table>
     </div>
+    <form action="/share" method="POST">
+        <div class="modal fade" id="modalShare" tabindex="-1" role="dialog" aria-labelledby="modalShareLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalShareLabel">Share Keywords</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="shareKeywords">Keywords</label>
+                        <input type="text" class="form-control" id="shareKeywords" aria-describedby="shareKeywordsHelp">
+                        <small id="shareKeywordsHelp" class="form-text text-muted">
+                            Type here the keywords of the reason about the bans you want to share separated by a ';'
+                            <br>Exemple: "sexiste;sexisme;débile;harceleur;backseat"
+                            <br>Leave blank to share all your bans!
+                        </small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-primary" value="Share">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+                </div>
+            </div>
+        </div>
+    </form>
 <%
     } else {
 %> 

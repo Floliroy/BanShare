@@ -14,11 +14,23 @@ if(locals.user && user.share){
 %>
         <nav class="navbar container-fluid justify-content-center">
 
+<%
+            if(locals.user && user.share){
+%>
             <form action="<%=shareLink%>" method="POST">
                 <button class="btn btn-light me-3">
                     <%=shareText%>
                 </button>
             </form>
+<%
+            }else{
+%>
+                <button type="button" class="btn btn-light me-3" data-toggle="modal" data-target="#modalShare">
+                    <%=shareText%>
+                </button>
+<%
+            }
+%>
             <a class="btn btn-light" href="/logout">
                 Log-Out
             </a>
