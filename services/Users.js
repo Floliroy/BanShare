@@ -46,11 +46,11 @@ module.exports = class Users{
         }
     }
 
-    static async updateShare(id, share, con){
+    static async updateShare(id, share, keywords, con){
         const connection = con ? con : await Database.getConnection()
         try{
-            await connection.execute("UPDATE g_usr SET g_ur_shr = ? WHERE g_ur_id = ?", 
-                [share ? 1 : 0, id]
+            await connection.execute("UPDATE g_usr SET g_ur_shr = ?, g_ur_key = ? WHERE g_ur_id = ?", 
+                [share ? 1 : 0, keywords, id]
             )
         }catch (error){
             throw new Error(error.message)
@@ -115,6 +115,20 @@ module.exports = class Users{
         try{
             let result = await connection.execute("SELECT g_ur_shr FROM g_usr WHERE g_ur_id = ?", [userId])
             return result[0][0].g_ur_shr && result[0][0].g_ur_shr == 1
+        }catch (error){
+            throw new Error(error.message)
+        }finally{
+            if(!con) Database.releaseConnection(connection) 
+        }
+    }
+
+    static async getSharingDatas(userId, con){
+        const connection = con ? con : await Database.getConnection()
+        try{
+            let result = await connection.execute("SELECT g_ur_shr, g_ur_key FROM g_usr WHERE g_ur_id = ?", [userId])
+            const isSharing = result[0][0].g_ur_shr && result[0][0].g_ur_shr == 1
+            const keywords = result[0][0].g_ur_key && result[0][0].g_ur_key.trim() != "" ? result[0][0].g_ur_key : null
+            return {isSharing, keywords}
         }catch (error){
             throw new Error(error.message)
         }finally{

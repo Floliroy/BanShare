@@ -33,9 +33,7 @@ module.exports = function(app){
             return res.status(401).send("Not authorized")
         }
 
-        console.log(req.body)
-        console.log(req.body.shareKeywords && req.body.shareKeywords.trim() != "")
-        await ApiTwitch.shareBans(req.cookies.userId)
+        await ApiTwitch.shareBans(req.cookies.userId, req.body.shareKeywords)
 
         return res.redirect("/")
     })

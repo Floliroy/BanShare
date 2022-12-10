@@ -4,6 +4,7 @@ CREATE TABLE g_usr (
     g_ur_img VARCHAR(500),
     g_ur_ttv_tok VARCHAR(500),
     g_ur_shr INT,
+    g_ur_key VARCHAR(5000),
     PRIMARY KEY(g_ur_id)
 );
 

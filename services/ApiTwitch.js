@@ -46,6 +46,16 @@ async function getRefreshAuthProvider(userId, con){
     return authProvider
 }
 
+function reasonContainKeyword(reason, keywords){
+    const splitKeywords = keywords.split(";")
+    for(const keyword of splitKeywords){
+        if(keyword.trim() != "" && reason.includes(keyword.trim())){
+            return true
+        }
+    }
+    return false
+}
+
 const mapListener = new Map()
 async function setupOnBan(userId){
     const userListener = await listener.subscribeToChannelBanEvents(userId, async function(event){
@@ -53,7 +63,13 @@ async function setupOnBan(userId){
 
         const connect = await Database.getConnection()
         try{
-            if(!await Users.isSharing(event.broadcasterId, connect)) return
+            const sharing = await Users.getSharingDatas(event.broadcasterId, connect)
+            let containKeyword = true
+            if(sharing.keywords){
+                containKeyword = reasonContainKeyword(event.reason, sharing.keywords)
+            }
+
+            if(!sharing.isSharing || !containKeyword) return
 
             BanChannel.addBannedUser(event.broadcasterId, event.userId, connect)
             console.log(`LOG: New ban into ${event.broadcasterDisplayName}'s list: ${event.userDisplayName}`)
@@ -124,7 +140,7 @@ module.exports = class ApiTwitch {
         res.cookie("accessToken", accessSaved)
     }
 
-    static async shareBans(userId){
+    static async shareBans(userId, keywords){
         const con = await Database.getConnection()
         try{
             const authProvider = await getRefreshAuthProvider(userId, con)
@@ -134,8 +150,16 @@ module.exports = class ApiTwitch {
 
             await setupOnBan(userId)
 
-            Users.updateShare(userId, true, con)
-            BanChannel.addBannedsUsers(userId, banneds.data, con)
+            let key = keywords && keywords.trim() != "" ? keywords : null
+            Users.updateShare(userId, true, key, con)
+
+            //TODO: Add reason when it will be available
+            const values = new Array()
+            for(const banned of banneds.data){
+                if(banned.expiryDate) continue
+                values.push([userId, banned.userId])
+            }
+            BanChannel.addBannedsUsers(values, con)
         }catch(error){
             throw new Error(error.message)
         }finally{

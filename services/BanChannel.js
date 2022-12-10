@@ -14,15 +14,10 @@ module.exports = class BanChannel{
         }
     }
 
-    static async addBannedsUsers(user, banneds, con){
+    static async addBannedsUsers(banneds, con){
         const connection = con ? con : await Database.getConnection()
         try{
-            const values = new Array()
-            for(const banned of banneds){
-                if(banned.expiryDate) continue
-                values.push([user, banned.userId])
-            }
-            await connection.query("INSERT INTO g_ban (g_bn_id, g_bn_ban) VALUES ?", [values])
+            await connection.query("INSERT INTO g_ban (g_bn_id, g_bn_ban) VALUES ?", [banneds])
         }catch (error){
         }finally{
             if(!con) Database.releaseConnection(connection) 
