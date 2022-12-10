@@ -90,6 +90,7 @@ module.exports = class Users{
             for(const line of result[0]){
                 user.subTo.push(line.g_sb_id)
             }
+            console.log(user.subTo)
             return user
         }catch (error){
             throw new Error(error.message)
@@ -153,7 +154,6 @@ module.exports = class Users{
             users.sort(function(a, b){
                 return b.subs - a.subs
             })
-            console.log(users)
             return users
         }catch (error){
             return new Array()
