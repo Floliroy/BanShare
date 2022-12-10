@@ -71,7 +71,8 @@ async function setupOnBan(userId){
 
             if(!sharing.isSharing || !containKeyword) return
 
-            BanChannel.addBannedUser(event.broadcasterId, event.userId, connect)
+            const reason = event.reason && event.reason.trim() != "" ? event.reason : null
+            BanChannel.addBannedUser(event.broadcasterId, event.userId, reason, connect)
             console.log(`LOG: New ban into ${event.broadcasterDisplayName}'s list: ${event.userDisplayName}`)
 
             const subs = await SubChannel.getFromUser(event.broadcasterId, connect)
@@ -168,7 +169,7 @@ module.exports = class ApiTwitch {
                     }
                 }
                 if(banned.expiryDate || !containKeyword) continue
-                values.push([userId, banned.userId])
+                values.push([userId, banned.userId, banned.reason])
             }
             BanChannel.addBannedsUsers(values, con)
         }catch(error){
@@ -200,8 +201,12 @@ module.exports = class ApiTwitch {
                 alreadyBanneds.push(banned.userId)
             }
             for(const banned of banneds){
-                if(!alreadyBanneds.includes(banned)){
-                    api.moderation.banUser(userId, userId, {duration: null, reason: `Ban copied from ${subName}'s channel when subscribing to her/him`, userId: banned})  
+                if(!alreadyBanneds.includes(banned.userId)){
+                    let reason = `Ban copied from ${subName}'s channel`
+                    if(banned.reason && banned.reason.trim() != ""){
+                        reason += ` for: ${banned.reason}`
+                    }
+                    api.moderation.banUser(userId, userId, {duration: null, reason, userId: banned})  
                 }
             }
 

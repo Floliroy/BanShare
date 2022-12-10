@@ -11,6 +11,7 @@ CREATE TABLE g_usr (
 CREATE TABLE g_ban (
     g_bn_id VARCHAR(50),
     g_bn_ban VARCHAR(50),
+    g_bn_res VARCHAR(1000),
     PRIMARY KEY(g_bn_id, g_bn_ban)
 );
 

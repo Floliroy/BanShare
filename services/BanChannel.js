@@ -2,11 +2,11 @@ const Database = require("./Database")
 
 module.exports = class BanChannel{
 
-    static async addBannedUser(user, banned, con){
+    static async addBannedUser(user, banned, reason, con){
         const connection = con ? con : await Database.getConnection()
         try{
-            await connection.execute("INSERT INTO g_ban (g_bn_id, g_bn_ban) VALUES (?, ?)", 
-                [user, banned]
+            await connection.execute("INSERT INTO g_ban (g_bn_id, g_bn_ban, g_bn_res) VALUES (?, ?, ?)", 
+                [user, banned, reason]
             )
         }catch (error){
         }finally{
@@ -17,7 +17,7 @@ module.exports = class BanChannel{
     static async addBannedsUsers(banneds, con){
         const connection = con ? con : await Database.getConnection()
         try{
-            await connection.query("INSERT INTO g_ban (g_bn_id, g_bn_ban) VALUES ?", [banneds])
+            await connection.query("INSERT INTO g_ban (g_bn_id, g_bn_ban, g_bn_res) VALUES ?", [banneds])
         }catch (error){
         }finally{
             if(!con) Database.releaseConnection(connection) 
@@ -30,7 +30,7 @@ module.exports = class BanChannel{
             const result = await connection.execute("SELECT * FROM g_ban WHERE g_bn_id = ?", [user])
             const banneds = new Array()
             for(const line of result[0]){
-                banneds.push(line.g_bn_ban)
+                banneds.push({userId: line.g_bn_ban, reason: line.g_bn_res})
             }
             return banneds
         }catch (error){
