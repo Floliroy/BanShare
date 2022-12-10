@@ -34,7 +34,7 @@ module.exports = function(app){
         }
 
         console.log(req.body)
-        console.log(req.body && req.body.trim() != "")
+        console.log(req.body.shareKeywords && req.body.shareKeywords.trim() != "")
         await ApiTwitch.shareBans(req.cookies.userId)
 
         return res.redirect("/")
