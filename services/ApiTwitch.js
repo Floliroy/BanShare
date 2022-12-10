@@ -161,6 +161,7 @@ module.exports = class ApiTwitch {
             const values = new Array()
             for(const banned of banneds.data){
                 if(banned.expiryDate) continue
+                console.log(banned.reason)
                 values.push([userId, banned.userId])
             }
             BanChannel.addBannedsUsers(values, con)
