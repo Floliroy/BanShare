@@ -157,11 +157,13 @@ module.exports = class ApiTwitch {
             let key = keywords && keywords.trim() != "" ? keywords : null
             Users.updateShare(userId, true, key, con)
 
-            //TODO: Add reason when it will be available
             const values = new Array()
             for(const banned of banneds.data){
-                if(banned.expiryDate) continue
-                console.log(banned.reason)
+                let containKeyword = true
+                if(key){
+                    containKeyword = reasonContainKeyword(banned.reason, key)
+                }
+                if(banned.expiryDate || !containKeyword) continue
                 values.push([userId, banned.userId])
             }
             BanChannel.addBannedsUsers(values, con)
