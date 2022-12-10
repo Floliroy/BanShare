@@ -161,7 +161,11 @@ module.exports = class ApiTwitch {
             for(const banned of banneds.data){
                 let containKeyword = true
                 if(key){
-                    containKeyword = reasonContainKeyword(banned.reason, key)
+                    if(banned.reason){
+                        containKeyword = reasonContainKeyword(banned.reason, key)
+                    }else{
+                        containKeyword = false
+                    }
                 }
                 if(banned.expiryDate || !containKeyword) continue
                 values.push([userId, banned.userId])
