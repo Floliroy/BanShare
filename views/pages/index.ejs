@@ -44,13 +44,13 @@ const loginUrl = `https://id.twitch.tv/oauth2/authorize?client_id=ngi4q1u2mkhcgu
             </tbody>
         </table>
     </div>
-    <form action="/share" method="POST">
-        <div class="modal fade" id="modalShare" tabindex="-1" role="dialog" aria-labelledby="modalShareLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
+    <div class="modal fade" id="modalShare" tabindex="-1" role="dialog" aria-labelledby="modalShareLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="/share" method="POST">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalShareLabel">Share Keywords</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <h1 class="modal-title fs-5" id="modalShareLabel">Share Keywords</h1>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
@@ -67,10 +67,10 @@ const loginUrl = `https://id.twitch.tv/oauth2/authorize?client_id=ngi4q1u2mkhcgu
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <input type="button" class="btn btn-primary" value="Share">
                     </div>
-                </div>
+                </form>
             </div>
         </div>
-    </form>
+    </div>
 <%
     } else {
 %> 

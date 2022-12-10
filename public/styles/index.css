@@ -5,7 +5,7 @@
     --third-color: #50C878;
     --white-color: white;
     --black-color: black;
-    --background-color: #001431;
+    --background-color: #121212;
 }
 @font-face {
     font-family: 'Arcane';
@@ -95,6 +95,9 @@ a, a:hover{
 
     padding-left: 1.5rem !important;
     padding-right: 1.5rem !important;
+}
+.modal-content{
+    background-color: var(--background-color) !important;
 }
 
 .img-rounded{
