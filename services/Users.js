@@ -153,6 +153,7 @@ module.exports = class Users{
             users.sort(function(a, b){
                 return b.subs - a.subs
             })
+            console.log(users)
             return users
         }catch (error){
             return new Array()
