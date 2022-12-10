@@ -45,7 +45,7 @@ module.exports = function(app){
 
         const con = await Database.getConnection()
         try{
-            await Users.updateShare(req.cookies.userId, false, con)
+            await Users.updateShare(req.cookies.userId, false, null, con)
             await BanChannel.removeFromUser(req.cookies.userId, con)
             await ApiTwitch.unshareBans(req.cookies.userId)
         }catch(error){
