@@ -80,7 +80,11 @@ async function setupOnBan(userId){
                 const api = new ApiClient({ authProvider: auth })
 
                 if(!await api.moderation.checkUserBan(sub, event.userId)){
-                    api.moderation.banUser(sub, sub, {duration: null, reason: `Ban copied from ${event.broadcasterDisplayName}'s channel`, userId: event.userId})    
+                    let reason = `Ban copied from ${event.broadcasterDisplayName}'s channel`
+                    if(event.reason && event.reason.trim() != ""){
+                        reason += ` for: ${event.reason}`
+                    }
+                    api.moderation.banUser(sub, sub, {duration: null, reason, userId: event.userId})    
                 }            
             }
         }catch(error){
@@ -190,7 +194,7 @@ module.exports = class ApiTwitch {
             }
             for(const banned of banneds){
                 if(!alreadyBanneds.includes(banned)){
-                    api.moderation.banUser(userId, userId, {duration: null, reason: `Ban copied from ${subName}'s channel`, userId: banned})  
+                    api.moderation.banUser(userId, userId, {duration: null, reason: `Ban copied from ${subName}'s channel when subscribing to her/him`, userId: banned})  
                 }
             }
 
