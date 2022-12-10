@@ -206,7 +206,7 @@ module.exports = class ApiTwitch {
                     if(banned.reason && banned.reason.trim() != ""){
                         reason += ` for: ${banned.reason}`
                     }
-                    api.moderation.banUser(userId, userId, {duration: null, reason, userId: banned})  
+                    api.moderation.banUser(userId, userId, {duration: null, reason, userId: parseInt(banned)})  
                 }
             }
 
