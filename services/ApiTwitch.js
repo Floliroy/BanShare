@@ -125,7 +125,7 @@ module.exports = class ApiTwitch {
             
             console.log("INFO: Logged on Twitch Bot")
         }catch(error){
-            throw new Error(error.message)
+            console.log(error)
         }finally{
             Database.releaseConnection(con)
         }
@@ -173,7 +173,7 @@ module.exports = class ApiTwitch {
             }
             BanChannel.addBannedsUsers(values, con)
         }catch(error){
-            throw new Error(error.message)
+            console.log(error)
         }finally{
             Database.releaseConnection(con)
         }
@@ -212,7 +212,7 @@ module.exports = class ApiTwitch {
 
             console.log(`LOG: User ${userId} subbed to ${subName}'s ban list`)
         }catch(error){
-            throw new Error(error.message)
+            console.log(error)
         }finally{
             Database.releaseConnection(con)
         }
