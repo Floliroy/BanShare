@@ -1,0 +1,67 @@
+<% 
+const loginUrl = `https://id.twitch.tv/oauth2/authorize?client_id=ngi4q1u2mkhcgu563gl2w0alh2tj2d&redirect_uri=https://ban.floliroy.fr/login&response_type=code&scope=moderation:read+moderator:manage:banned_users+chat:read+chat:edit`
+
+function getSubs(id){
+    for(const usr of allUsers){
+        if(id == usr.id){
+            return usr.subs
+        } 
+    }
+    return 0
+}
+%>
+
+<%
+    if(req.cookies.userId && req.cookies.accessToken){
+%>
+    <div class="table-responsive">
+        <table class="table table-dark" aria-label="Classement">
+            <thead class="text-center">
+                <tr>
+                    <th scope="col" class="px-5">Channel</th>
+                    <th scope="col" class="px-5">Bans</th>
+                    <th scope="col" class="px-5">Subs</th>
+                    <th scope="col" class="px-5">Join</th>
+                </tr>
+            </thead>
+            <tbody>
+<%
+                for(const usr of allUsers){
+                    if(usr.name && usr.image){
+%>
+                        <tr>
+                            <td>
+                                <img src="<%=usr.image%>" alt="Image" class="img-user img-fluid img-rounded" onerror="replaceImg(this)">    
+                                <%=usr.name%>
+                            </td>
+                            <td class="text-center"><%=usr.bans%></td>
+                            <td class="text-center"><%=getSubs(usr.id)%></td>
+                            <td class="text-center"> 
+                                <form action="/subTo" method="POST">
+                                    <input type="hidden" id="subId" name="subId" value="<%=usr.id%>">
+                                    <input type="hidden" id="subName" name="subName" value="<%=usr.name%>">
+                                    <button class="btn btn-light me-3" <%=usr.id == req.cookies.userId ? "disabled" : ""%>>
+                                        <%=shareText%>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+<%
+                    }
+                }
+%> 
+            </tbody>
+        </table>
+    </div>
+<%
+    } else {
+%> 
+        <div class="centered">
+            <a class="btn btn-twitch" href="<%=req.cookies.userId && req.cookies.accessToken ? "/login" : loginUrl %>">
+                CONNEXION <em class="fab fa-twitch"></em>
+            </a>
+        </div>
+<%
+    }
+%> 
+</div>

@@ -1,0 +1,29 @@
+<%
+let shareText = "Share Bans"
+let shareLink = `share`
+if(locals.user && user.share){
+    shareText = "Unshare Bans"
+    shareLink = "/unshare"
+}
+%>
+
+
+<header>
+<%
+    if(req.cookies.userId && req.cookies.accessToken){
+%>
+        <nav class="navbar container-fluid justify-content-center">
+
+            <form action="<%=shareLink%>" method="POST">
+                <button class="btn btn-light me-3">
+                    <%=shareText%>
+                </button>
+            </form>
+            <a class="btn btn-light" href="/logout">
+                Log-Out
+            </a>
+        </nav>
+<%
+    }
+%>
+</header>
