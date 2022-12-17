@@ -58,40 +58,46 @@ function reasonContainKeyword(reason, keywords){
 
 const mapListener = new Map()
 async function setupOnBan(userId){
-    const userListener = await listener.subscribeToChannelBanEvents(userId, async function(event){
-        if(!event.isPermanent) return
+    const userListener = await listener.subscribeToChannelBanEvents(userId, function(event){
+        setTimeout(async function(){ 
+            if(!event.isPermanent) return
 
-        const connect = await Database.getConnection()
-        try{
-            const sharing = await Users.getSharingDatas(event.broadcasterId, connect)
-            let containKeyword = true
-            if(sharing.keywords){
-                containKeyword = reasonContainKeyword(event.reason, sharing.keywords)
-            }
+            const connect = await Database.getConnection()
+            try{
+                const authProvider = await getRefreshAuthProvider(event.broadcasterId, connect)
+                const apiClient = new ApiClient({ authProvider })
+                if(!await apiClient.moderation.checkUserBan(event.broadcasterId, event.userId)) return
+                
+                const sharing = await Users.getSharingDatas(event.broadcasterId, connect)
+                let containKeyword = true
+                if(sharing.keywords){
+                    containKeyword = reasonContainKeyword(event.reason, sharing.keywords)
+                }
 
-            if(!sharing.isSharing || !containKeyword) return
+                if(!sharing.isSharing || !containKeyword) return
 
-            const reason = event.reason && event.reason.trim() != "" ? event.reason : null
-            BanChannel.addBannedUser(event.broadcasterId, event.userId, reason, connect)
-            console.log(`LOG: New ban into ${event.broadcasterDisplayName}'s list: ${event.userDisplayName}`)
+                const reason = event.reason && event.reason.trim() != "" ? event.reason : null
+                BanChannel.addBannedUser(event.broadcasterId, event.userId, reason, connect)
+                console.log(`LOG: New ban into ${event.broadcasterDisplayName}'s list: ${event.userDisplayName}`)
 
-            const subs = await SubChannel.getFromUser(event.broadcasterId, connect)
-            for(const sub of subs){
-                const auth = await getRefreshAuthProvider(sub, connect)
-                const api = new ApiClient({ authProvider: auth })
+                const subs = await SubChannel.getFromUser(event.broadcasterId, connect)
+                for(const sub of subs){
+                    const auth = await getRefreshAuthProvider(sub, connect)
+                    const api = new ApiClient({ authProvider: auth })
 
-                if(!await api.moderation.checkUserBan(sub, event.userId)){
-                    let reason = `Ban copied from ${event.broadcasterDisplayName}'s channel`
-                    if(event.reason && event.reason.trim() != ""){
-                        reason += ` for: ${event.reason}`
-                    }
-                    api.moderation.banUser(sub, sub, {duration: null, reason, userId: event.userId})    
-                }            
-            }
-        }catch(error){
-        }finally{
-            Database.releaseConnection(connect)
-        }
+                    if(!await api.moderation.checkUserBan(sub, event.userId)){
+                        let reason = `Ban copied from ${event.broadcasterDisplayName}'s channel`
+                        if(event.reason && event.reason.trim() != ""){
+                            reason += ` for: ${event.reason}`
+                        }
+                        api.moderation.banUser(sub, sub, {duration: null, reason, userId: event.userId})    
+                    }            
+                }
+            }catch(error){
+            }finally{
+                Database.releaseConnection(connect)
+            } 
+        }, 10 * 60 * 1000)
     })
     mapListener.set(userId, userListener)
 }
