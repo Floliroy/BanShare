@@ -157,7 +157,7 @@ module.exports = class ApiTwitch {
             const authProvider = await getRefreshAuthProvider(userId, con)
             const api = new ApiClient({ authProvider })
     
-            const banneds = await api.moderation.getBannedUsers(userId)
+            const banneds = await api.moderation.getBannedUsersPaginated(userId).getAll()
 
             await setupOnBan(userId)
 
@@ -165,7 +165,7 @@ module.exports = class ApiTwitch {
             Users.updateShare(userId, true, key, con)
 
             const values = new Array()
-            for(const banned of banneds.data){
+            for(const banned of banneds){
                 let containKeyword = true
                 if(key){
                     if(banned.reason){
@@ -200,9 +200,9 @@ module.exports = class ApiTwitch {
             SubChannel.subToUser(subId, userId, con)
             const banneds = await BanChannel.getAllFromUser(subId, con)
 
-            const result = await api.moderation.getBannedUsers(userId)
+            const result = await api.moderation.getBannedUsersPaginated(userId).getAll()
             const alreadyBanneds = new Array()
-            for(const banned of result.data){
+            for(const banned of result){
                 if(banned.expiryDate) continue
                 alreadyBanneds.push(banned.userId)
             }
