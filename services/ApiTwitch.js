@@ -13,6 +13,7 @@ const Tokens = require("./Tokens")
 const clientId = process.env.TWITCH_CLIENT_ID
 const clientSecret = process.env.TWITCH_CLIENT_SECRET
 const secret = process.env.SECRET
+const hostName = process.env.HOSTNAME
 
 let listener
 
@@ -22,7 +23,7 @@ async function getAccessToken(req, redirect){
         client_secret: clientSecret,
         code: req.query.code,
         grant_type: "authorization_code",
-        redirect_uri: `https://ban.floliroy.fr/${redirect}`
+        redirect_uri: `https://${req.hostname}/${redirect}`
     }).catch(() => { console.log("Error with twitch oauth2") })
     if(!result) return null
 
@@ -110,8 +111,8 @@ module.exports = class ApiTwitch {
         await apiClient.eventSub.deleteAllSubscriptions()
 
         listener = new EventSubMiddleware({
-            apiClient, secret, strictHostCheck: true,
-            hostName: "ban.floliroy.fr",
+            apiClient, secret, hostName,
+            strictHostCheck: true,
             pathPrefix: "/twitch"
         })
         await listener.apply(app)
